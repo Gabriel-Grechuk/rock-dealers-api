@@ -1,0 +1,37 @@
+version: '3'
+services:
+
+  postgres:
+    image: postgres:13.4
+    container_name: rock-dealers-db
+    restart: always
+    tty: true
+    volumes:
+      - ./.docker/dbdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=masterkey
+      - POSTGRES_DB=rock-dealers
+    ports:
+      - 5432:5432
+
+  redis:
+    container_name: redis
+    image: redis:7.0.4-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass masterkey
+    volumes:
+      - .:/home/redis/data
+
+  app:
+    build: .
+    container_name: rock-dealers-api
+    entrypoint: dockerize -wait tcp://postgres:5433 -timeout 40s ./.docker/entrypoint.sh
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/home/node/app
+    depends_on:
+      - postgres
+      - redis
