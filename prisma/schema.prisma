@@ -10,9 +10,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+generator nestgraphql {
+  provider                        = "node node_modules/prisma-nestjs-graphql"
+  output                          = "@generated"
+  noAtomicOperations              = true
+  fields_Validator_input          = "true"
+  fields_Validator_from           = "class-validator"
+  fields_BrazilianValidator_input = "true"
+  fields_BrazilianValidator_from  = "brazilian-class-validator"
+  fields_Transformer_model        = "true"
+  fields_Transformer_from         = "class-transformer"
+  fields_Scalars_from             = "graphql-scalars"
+  fields_Scalars_input            = true
+  fields_Scalars_output           = true
+}
+
 model User {
+  /// @Validator.IsUUID('4')
+  /// @Validator.IsNotEmpty()
+  /// @HideField({ match: ['User*CreateInput','User*UpdateInput'] })
   id String @id @default(uuid()) @db.Uuid()
 
+  /// @Validator.IsString()
+  /// @Validator.IsNotEmpty()
   name String @db.Text
 
   @@map("users")
