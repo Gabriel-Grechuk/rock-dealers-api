@@ -24,5 +24,5 @@ COPY --from=build dist dist
 
 USER node
 
-CMD [ "node", "dist/src/main" ]
+CMD [ "node", "dist/main" ]
 
